@@ -2,6 +2,8 @@ const http = require('http');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
 
+app.use(express.static('public'));
+
 console.log('✅ BabaChat WebSocket server running on port 8080');
 
 wss.on('connection', (ws) => {
