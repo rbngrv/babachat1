@@ -24,12 +24,19 @@ wss.on('connection', (ws) => {
       onlineUsers.set(msg.nick, ws);
       console.log(`👤 ${ws.nickname} connected`);
 
-      // ✅ Notify others that this user is online
+      // 📢 Notify others that this user is online (immediate update)
       broadcastExceptSender(ws, {
         type: 'status',
         nick: msg.nick,
         status: 'online'
       });
+
+      // Notify the client of their status as well (immediate feedback)
+      ws.send(JSON.stringify({
+        type: 'status',
+        nick: msg.nick,
+        status: 'online'
+      }));
 
       return;
     }
@@ -65,12 +72,12 @@ wss.on('connection', (ws) => {
       onlineUsers.delete(nick);
       console.log(`❌ ${nick} disconnected`);
 
-      // 🕒 Broadcast offline status + last seen
+      // 🕒 Broadcast offline status + last seen (correct lastSeen timestamp)
       broadcastExceptSender(ws, {
         type: 'status',
         nick,
         status: 'offline',
-        lastSeen: Date.now()
+        lastSeen: Date.now() // Always update `lastSeen` upon disconnect
       });
     }
   });
