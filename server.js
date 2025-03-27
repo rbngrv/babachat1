@@ -1,6 +1,6 @@
 const path = require('path');
-const app = express();
 const express = require('express');
+const app = express();
 
 const http = require('http');
 const WebSocket = require('ws');
@@ -9,6 +9,8 @@ const wss = new WebSocket.Server({ port: 8080 });
 app.use(express.static('public'));
 
 console.log('✅ BabaChat WebSocket server running on port 8080');
+
+const onlineUsers = new Map(); // 🟢 Track connected users by nickname
 
 wss.on('connection', (ws) => {
   console.log('✅ Client connected');
@@ -25,7 +27,16 @@ wss.on('connection', (ws) => {
     // ✅ Handle nickname setup
     if (msg.type === 'init') {
       ws.nickname = msg.nick;
+      onlineUsers.set(msg.nick, ws);
       console.log(`👤 ${ws.nickname} connected`);
+
+      // 📢 Notify others this user is online
+      broadcast({
+        type: 'status',
+        nick: msg.nick,
+        status: 'online'
+      });
+
       return;
     }
 
@@ -53,15 +64,39 @@ wss.on('connection', (ws) => {
     console.log('📦 Unhandled message type:', msg.type);
   });
 
+  // 🔌 Handle disconnect
   ws.on('close', () => {
-    console.log(`❌ ${ws.nickname || 'Unknown user'} disconnected`);
+    const nick = ws.nickname;
+    if (nick) {
+      onlineUsers.delete(nick);
+      console.log(`❌ ${nick} disconnected`);
+
+      // 📢 Broadcast "offline" and last seen
+      broadcast({
+        type: 'status',
+        nick,
+        status: 'offline',
+        lastSeen: Date.now()
+      });
+    }
   });
 });
 
+// ✅ Send message only to a specific recipient
 function broadcastToRecipient(recipientName, data) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN && client.nickname === recipientName) {
       client.send(JSON.stringify(data));
+    }
+  });
+}
+
+// ✅ Broadcast to all connected clients
+function broadcast(data) {
+  const str = JSON.stringify(data);
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(str);
     }
   });
 }
