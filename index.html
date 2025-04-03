@@ -1,0 +1,1737 @@
+<!-- Perfected and Polished BabaChat HTML -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BabaChat V1.0.0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1.6.2"></script>
+
+
+  <style>
+    :root {
+      --bg-light: #fdf6fa;
+      --bg-dark: #121212;
+      --chat-bg-light: linear-gradient(to bottom right, #fff0f6, #ffd6ec);
+      --chat-bg-dark: linear-gradient(to bottom right, #1e1e1e, #2a2a2a);
+      --msg-pink: #ff42e3;
+      --msg-grey: #e3e3e3;
+      --msg-yellow: #ffe500;
+      --msg-green: #00ffae;
+      --msg-blue: #00bfff;
+      --msg-matrix: #00ff00;
+      --font-color-light: #000000;
+      --font-color-dark: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+	html, body {
+      height: 100%;
+      overflow: hidden;
+}
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      font-family: 'Lexend', sans-serif;
+      background: var(--bg-light);
+      color: var(--font-color-light);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--font-color-dark);
+    }
+
+    #sidebar {
+      width: 280px;
+      background: linear-gradient(160deg, #ffe0f0, #ffc3e0);
+      border-right: 1px solid #ccc;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+	  height: 100vh;
+	  overflow: hidden;
+	  position: relative;
+	  box-sizing: border-box;
+	  height: 100vh;
+	  outline: none; /* or remove this line */
+    }
+
+    #sidebar input[type="text"] {
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      font-family: 'Lexend', sans-serif;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: box-shadow 0.2s ease;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    #sidebar input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #ff42e3aa;
+    }
+
+    body.dark-mode #sidebar {
+      background: #1a1a1a;
+    }
+
+    #room-list {
+      flex-grow: 1;
+      overflow-y: auto;
+	  max-height: calc(100vh - 200px);
+	  padding-right: 5px;
+	  margin-bottom: 130px;
+	  margin-top: 10px;
+	  display: flex;
+	  flex-direction: column;
+	  gap: 10px;
+    }
+	
+	#room-list::-webkit-scrollbar {
+      width: 8px;
+}
+  
+    #room-list::-webkit-scrollbar-thumb {
+       background: #ccc;
+       border-radius: 4px;
+}
+
+    body.dark-mode #room-list::-webkit-scrollbar-thumb {
+    background: #666;
+}
+
+    .room {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;
+    }
+
+    .room img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .room.active {
+      background-color: var(--msg-pink);
+      color: white;
+    }
+
+    .room:hover {
+      background: #ffe6f3;
+    }
+
+    #chat-container {
+	  flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--chat-bg-light);
+      background-size: cover;
+      background-position: center;
+      transition: background 0.3s ease;
+	  box-sizing: border-box;
+	 }
+	 
+
+    body.dark-mode #chat-container {
+      background: var(--chat-bg-dark);
+    }
+
+#header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 15px;
+  background: linear-gradient(160deg, #ffe0f0, #ffc3e0); /* Match sidebar */
+  color: #333;
+  font-family: 'Lexend', sans-serif;
+  font-size: 1rem;
+  border-bottom: 1px solid #e0bcd2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: 50px; /* Optional: make it same height as sidebar elements */
+  border-top-right-radius: 1rem; /* if needed */
+  background: linear-gradient(160deg, #ffe0f0, #ffc3e0);
+}
+
+
+@media (max-width: 600px) {
+  #header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+}
+
+    #contact-name {
+      font-size: 1rem;
+      color: #555;
+    }
+
+    #messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+	  padding-bottom: 90px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      padding: 12px 20px;
+      border-radius: 25px;
+      margin-bottom: 26px;
+      max-width: 80%;
+      word-wrap: break-word;
+      line-height: 1.5;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      white-space: pre-wrap;
+      font-size: 1rem;
+      position: relative;
+	  word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .message .timestamp {
+      font-size: 0.65rem;
+      position: absolute;
+      bottom: -16px;
+      right: 12px;
+      transition: color 0.3s;
+    }
+
+body.dark-mode .message .timestamp {
+  color: #fff;
+}
+
+body:not(.dark-mode) .message .timestamp {
+  color: #000;
+}
+
+
+    .sent {
+      align-self: flex-end;
+      background-color: var(--msg-pink);
+      color: white;
+    }
+
+    .received {
+      align-self: flex-start;
+      background-color: var(--msg-grey);
+      color: black;
+    }
+
+    #input-area {
+	  position: absolute;
+	  align-items: center;
+	  box-sizing: border-box;
+      display: flex;
+      padding: 15px;
+      border-top: 1px solid #ccc;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #fff;
+	  bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    #message-input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      flex-grow: 1;
+      font-family: 'Lexend', sans-serif;
+    }
+
+    input[type="file"]#file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .custom-file-label {
+      padding: 8px 12px;
+      background: linear-gradient(to right, #ff79c6, #ff42e3);
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+
+    .custom-file-label:hover {
+      background: linear-gradient(to right, #ff4fbf, #e600aa);
+    }
+
+    #send-button, #pinktheme {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(to right, #ff79c6, #ff42e3);
+      color: white;
+      transition: background 0.3s;
+    }
+
+    #send-button:hover, #pinktheme:hover {
+      background: linear-gradient(to right, #ff4fbf, #e600aa);
+    }
+
+    #typing-indicator {
+      padding: 5px 15px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .pink-theme input,
+    .pink-theme button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+    }
+
+	
+	#logo img {
+      max-width: 80px;
+	  max-height: 80px;
+	  margin-right: 70px;
+      height: auto;
+      display: block;
+      margin-bottom: 20px;
+	  margin-left: 75px;
+	  align-self: center;
+	  
+	  
+	  
+}
+
+    #logo img:hover{
+	transform: scaleX(-1);
+	color: midnight-blue;
+	filter: drop-shadow(0 0 10px #fdc895);
+	
+
+	}
+	
+	#contacts1{
+	  margin-top: 20px;
+	  overflow-y: auto;
+	  flex-grow: 1;
+	  max-height: calc(75vh - 180px);
+	  
+	  }
+	  
+	#emoji-area {
+      position: relative;
+}
+
+    #emoji-button {
+      font-size: 1.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+}
+
+    #emoji-picker-container {
+        position: absolute;
+        bottom: 100px; /* Adjust so it floats above input */
+        right: 20px;
+        z-index: 9999;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        background: white;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+    #emoji-picker-container.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+}
+
+    emoji-picker {
+  --background: white;
+  --border-color: #ffb3ec;
+  --category-button-color: #ff42e3;
+  --accent-color: #ff42e3;
+  --category-icon-active-color: #fff;
+  --category-icon-color: #888;
+  --emoji-size: 1.5em;
+}
+    body.dark-mode emoji-picker {
+  --background: #2a2a2a;
+  --border-color: #444;
+  --category-button-color: #ff79c6;
+  --category-icon-color: #ccc;
+  --emoji-size: 1.5em;
+}
+
+#login-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom right, #fff0f6, #ffd6ec);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.login-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#login-nickname {
+  padding: 10px;
+  width: 100%;
+  font-size: 1rem;
+  margin-top: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-family: 'Lexend', sans-serif;
+}
+
+#login-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: linear-gradient(to right, #ff79c6, #ff42e3);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#login-options {
+  margin-top: 35px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#options-toggle {
+  font-family: 'Lexend', sans-serif;
+  margin-top: 30px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #888;
+}
+
+#login-options {
+  margin-top: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  padding: 15px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+#options-toggle {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #888;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#add-friend-btn {
+padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(to right, #ff79c6, #ff42e3);
+      color: white;
+      transition: background 0.3s;
+
+}
+
+#clearchat-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(to right, #ff79c6, #ff42e3);
+      color: white;
+      transition: background 0.3s;
+	  margin-bottom: 55px;
+	  width: 250px;
+}
+
+#main-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+#sidebar-footer {
+margin-top: auto;
+ position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  align-items: center;
+  
+}
+
+/* Modern custom scrollbar styling */
+#contacts1::-webkit-scrollbar {
+  width: 2px;
+}
+
+#contacts1::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#contacts1::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 66, 227, 0.6); /* Light pink */
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+#contacts1:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 66, 227, 0.8); /* Slightly darker on hover */
+}
+
+/* Firefox support */
+#contacts1 {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 66, 227, 0.6) transparent;
+}
+
+#textcontacts{
+margin-left: 4px;
+ font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+#contact-name {
+  font-weight: 600;
+  color: #b548a2;
+}
+
+/* Modern custom scrollbar styling */
+#chat-container::-webkit-scrollbar {
+  width: 2px;
+}
+
+#chat-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#chat-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 66, 227, 0.6); /* Light pink */
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+#chat-container:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 66, 227, 0.8); /* Slightly darker on hover */
+}
+
+/* Firefox support */
+#chat-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 66, 227, 0.6) transparent;
+}
+
+@keyframes animatedSidebar {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#sidebar {
+  background: linear-gradient(270deg, #f0f9ff, #e0f7fa, #fefcea, #e0f7fa);
+  background-size: 800% 800%;
+  animation: animatedSidebar 20s ease infinite;
+  transition: background 0.3s ease;
+}
+
+@keyframes animatedHeader {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#header {
+  background: linear-gradient(270deg, #f0f9ff, #e0f7fa, #fefcea, #e0f7fa);
+  background-size: 800% 800%;
+  animation: animatedHeader 20s ease infinite;
+  transition: background 0.3s ease;
+}
+
+#sidebar > *:not(#sidebar-particles) {
+  position: relative;
+  z-index: 1;
+}
+
+#logo img {
+  animation: pulseLogo 2s ease-in-out infinite;
+}
+
+@keyframes pulseLogo {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1); /* Increase size slightly */
+  }
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+
+
+
+  
+  </style>
+</head>
+<body>
+<audio id="messageSent" src="https://drive.google.com/file/uc/?export=download&id=10TEYWLcAUkCu4fCzgeqZXJjElgDMFWL0"></audio>
+<audio id="messageReceived" src="https://drive.google.com/file/uc/?export=download&id=1jn4V0wfeVngNp3CgtgO_iiVT9ocP0l99"></audio>
+<div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.95); z-index: 1000;">
+  <h1>BabaChat 💬</h1>
+
+  <input type="text" id="login-nickname" placeholder="Your Nickname" style="padding: 10px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px;">
+
+  <button id="login-button" style="padding: 10px 20px; font-size: 1rem; background: linear-gradient(to right, #ff79c6, #ff42e3); color: white; border: none; border-radius: 8px; cursor: pointer;">Login</button>
+
+  <button id="options-toggle" style="margin-top: 10px; background: none; border: none; color: #555; cursor: pointer; text-decoration: underline;">Options</button>
+
+  <div id="login-options" style="display: none; margin-top: 20px; background: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 15px; width: 300px;">
+    <div style="margin-bottom: 10px;">
+      <label for="avatar-select">Choose Avatar:</label><br>
+      <select id="avatar-select">
+        <option value="Frog">Frog</option>
+        <option value="Cat">Cat</option>
+        <option value="Dog">Dog</option>
+        <option value="Dragon">Dragon</option>
+      </select>
+      <div style="margin-top: 5px;">
+        <img id="avatar-preview" src="https://api.dicebear.com/7.x/personas/svg?seed=Frog" alt="Avatar Preview" style="width: 64px; height: 64px; border-radius: 50%; margin-top: 5px;">
+      </div>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="bg-upload-login">Upload Background:</label><br>
+      <input type="file" id="bg-upload-login" accept="image/*">
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="dark-mode-toggle">Dark Mode:</label>
+      <input type="checkbox" id="dark-mode-toggle">
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="theme-select">Theme:</label><br>
+      <select id="theme-select">
+        <option value="pink">Pink</option>
+        <option value="blue">Blue</option>
+        <option value="matrix">Matrix</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="sound-toggle">Enable Sounds:</label>
+      <input type="checkbox" id="sound-toggle">
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="language-select">Language:</label><br>
+      <select id="language-select">
+        <option value="en">English</option>
+        <option value="nl">Nederlands</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  <div id="sidebar">
+  <canvas id="sidebar-particles" style="position: absolute; top: 0; left: 0; z-index: 0; width: 100%; height: 100%;"></canvas>
+
+    <div id="logo">
+  <img src="https://i.imgur.com/ciVjC4a.png" alt="BabaCHAT" />
+
+</div>
+<input type="text" id="add-friend-name" placeholder="Add friend..." />
+<button id="add-friend-btn">➕ Add</button>
+<div id="contacts1">
+<span id="textcontacts">My contacts</span>
+    <div id="room-list"></div>
+	</div>
+	<div id="sidebar-footer">
+	<button id="clearchat-btn">🗑️ Clear chat</button>
+	<img id="main-avatar" src="" alt="Your Avatar" style="width: 48px; height: 48px; border-radius: 50%; margin-left: 100px; margin-top: 650px; position: fixed;" />
+  </div>
+  </div>
+
+  <div id="chat-container">
+    <div id="header">
+  <div id="header-left" style="display: flex; align-items: center; gap: 10px;">
+  <img id="contact-avatar" src="" alt="Contact Avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px;">
+    <span id="contact-name">Chatting with ...</span>
+	<div id="contact-status" style="font-size: 0.8rem; color: #888;"></div>
+
+  </div>
+
+  <div id="menu-wrapper" style="position: relative;">
+    <button id="menu-button" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">⋮</button>
+    <div id="menu-dropdown" style="display: none; position: absolute; right: 0; top: 36px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000;">
+      <ul style="list-style: none; margin: 0; padding: 10px 0;">
+        <li id="change-bg-option" style="padding: 8px 16px; cursor: pointer;">🖼️ Set Background</li>
+		<li id="rename-contact-option" style="padding: 8px 16px; cursor: pointer;">✏️ Rename Contact</li>
+		 <li id="delete-contact-option" style="padding: 8px 16px; cursor: pointer; color: red;">🗑️ Delete Contact</li>
+      </ul>
+    </div>
+    <input type="file" id="bg-upload" accept="image/*" style="display: none;" />
+  </div>
+</div>
+
+
+
+    <div id="messages"></div>
+	<div id="typing-indicator" style="padding: 5px 15px; font-size: 0.8rem; color: #888;"></div>
+
+    <div id="input-area">
+      <input type="text" id="message-input" placeholder="Type a message... 😄" />
+      <input type="file" id="file-input" />
+	<div id="emoji-wrapper" style="position: relative;">
+  <button id="emoji-button" style="font-size: 1.5rem;">😊</button>
+  <div id="emoji-picker-container" style="position: absolute; bottom: 45px; right: 0; display: none; z-index: 1000;">
+    <emoji-picker></emoji-picker>
+  </div>
+</div>
+      <button id="send-button">Send ✉️</button>
+    </div>
+	
+	
+  </div>
+  
+ <div id="confirm-delete-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 9999; justify-content: center; align-items: center;">
+  <div style="background: white; padding: 25px 30px; border-radius: 18px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.15); font-family: 'Lexend', sans-serif;">
+    <p id="confirm-delete-text" style="margin-bottom: 20px; font-size: 1rem;">Are you sure you want to delete this contact?</p>
+    <button id="confirm-delete-yes" style="background: linear-gradient(to right, #ff79c6, #ff42e3); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: bold; cursor: pointer; margin-right: 10px;">Yes</button>
+    <button id="confirm-delete-no" style="background: #ddd; border: none; border-radius: 10px; padding: 10px 18px; font-weight: bold; cursor: pointer;">Cancel</button>
+  </div>
+</div>
+
+<div id="rename-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 9999; justify-content: center; align-items: center;">
+  <div style="background: white; padding: 25px 30px; border-radius: 18px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.15); font-family: 'Lexend', sans-serif;">
+    <p style="margin-bottom: 10px;">Enter a new name for this contact:</p>
+    <input type="text" id="rename-input" style="padding: 10px; width: 200px; border-radius: 8px; border: 1px solid #ccc;"><br><br>
+    <button id="rename-confirm" style="background: linear-gradient(to right, #ff79c6, #ff42e3); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-weight: bold; cursor: pointer; margin-right: 10px;">Save</button>
+    <button id="rename-cancel" style="background: #ddd; border: none; border-radius: 10px; padding: 8px 16px; font-weight: bold; cursor: pointer;">Cancel</button>
+  </div>
+</div>
+
+
+ 
+ 
+<script type="module">
+  
+  window.selectedContact = null;
+  import 'https://cdn.jsdelivr.net/npm/emoji-picker-element@1.6.2/index.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    let ws;
+	let myNickname = '';
+    const loginScreen = document.getElementById('login-screen');
+    const loginButton = document.getElementById('login-button');
+    const loginInput = document.getElementById('login-nickname');
+    const nicknameInput = document.getElementById('nickname');
+    const backgroundUpload = document.getElementById('bg-upload-login');
+	
+
+	
+
+	
+backgroundUpload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const imageUrl = event.target.result;
+    localStorage.setItem('babaChatBg', imageUrl); // ✅ Save for use after login
+    console.log("✅ Background saved from login screen.");
+  };
+  reader.readAsDataURL(file);
+  });
+  
+  function isDarkColor(bgColor) {
+  const rgb = bgColor.match(/\d+/g);
+  if (!rgb || rgb.length < 3) return false;
+
+  const r = parseInt(rgb[0], 10);
+  const g = parseInt(rgb[1], 10);
+  const b = parseInt(rgb[2], 10);
+
+  // Standard luminance formula
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness < 128;
+}
+
+  
+  
+
+
+    const optionsToggle = document.getElementById('options-toggle');
+    const optionsMenu = document.getElementById('login-options');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const themeSelect = document.getElementById('theme-select');
+    const soundToggle = document.getElementById('sound-toggle');
+    const languageSelect = document.getElementById('language-select');
+    const avatarSelect = document.getElementById('avatar-select');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const mainAvatar = document.getElementById('main-avatar');
+    const messagesDiv = document.getElementById('messages');
+    const roomList = document.getElementById('room-list');
+    const contactName = document.getElementById('contact-name');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const fileInput = document.getElementById('file-input');
+    const emojiBtn = document.getElementById('emoji-button');
+    const emojiContainer = document.getElementById('emoji-picker-container');
+    const picker = document.querySelector('emoji-picker');
+    const addFriendInput = document.getElementById('add-friend-name');
+    const addFriendBtn = document.getElementById('add-friend-btn');
+	const chatBgUpload = document.getElementById('bg-upload');
+	const clearChatBtn = document.getElementById('clearchat-btn');
+	const deleteContactOption = document.getElementById('delete-contact-option');
+	const modal = document.getElementById('confirm-delete-modal');
+    const confirmText = document.getElementById('confirm-delete-text');
+    const confirmYes = document.getElementById('confirm-delete-yes');
+    const confirmNo = document.getElementById('confirm-delete-no');
+	let contactAliases = JSON.parse(localStorage.getItem('babaAliases')) || {};
+	function getDisplayName(realName) {
+    return contactAliases[realName] || realName;
+}
+
+    const renameOption = document.getElementById('rename-contact-option');
+    const renameModal = document.getElementById('rename-modal');
+    const renameInput = document.getElementById('rename-input');
+    const renameConfirm = document.getElementById('rename-confirm');
+    const renameCancel = document.getElementById('rename-cancel');
+	const userStatus = {}; // nick => { online: true/false, lastSeen: 123 }
+	
+
+
+renameOption.addEventListener('click', () => {
+  if (selectedContact) {
+    const currentAlias = contactAliases[selectedContact] || '';
+    renameInput.value = currentAlias;
+    renameModal.style.display = 'flex';
+  }
+});
+
+renameConfirm.addEventListener('click', () => {
+  const newAlias = renameInput.value.trim();
+  if (newAlias && selectedContact) {
+    contactAliases[selectedContact] = newAlias;
+    localStorage.setItem('babaAliases', JSON.stringify(contactAliases));
+    renderContacts();
+    contactName.textContent = `Chatting with ${newAlias}`;
+    renameModal.style.display = 'none';
+  }
+});
+
+renameCancel.addEventListener('click', () => {
+  renameModal.style.display = 'none';
+});
+
+
+
+
+	
+deleteContactOption.addEventListener('click', () => {
+  if (selectedContact) {
+    confirmText.textContent = `Are you sure you want to delete "${selectedContact}"?`;
+    modal.style.display = 'flex';
+  }
+});
+
+confirmYes.addEventListener('click', () => {
+  if (selectedContact) {
+    contacts = contacts.filter(name => name !== selectedContact);
+    delete chatHistory[selectedContact];
+    localStorage.setItem('babaChatHistory', JSON.stringify(chatHistory));
+    localStorage.setItem('babaContacts', JSON.stringify(contacts));
+    selectedContact = null;
+    messagesDiv.innerHTML = '';
+    contactName.textContent = '';
+    renderContacts();
+  }
+  modal.style.display = 'none';
+});
+
+confirmNo.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+	
+    const chatHistory = {};
+	let contacts;
+try {
+  const savedContacts = JSON.parse(localStorage.getItem('babaContacts'));
+  contacts = Array.isArray(savedContacts) ? savedContacts : [];
+} catch {
+  contacts = [];
+}
+    const menuBtn = document.getElementById('menu-button');
+const menuDropdown = document.getElementById('menu-dropdown');
+const changeBgOption = document.getElementById('change-bg-option');
+const bgUpload = document.getElementById('bg-upload');
+
+menuBtn.addEventListener('click', () => {
+  menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+document.addEventListener('click', (e) => {
+  if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+    menuDropdown.style.display = 'none';
+  }
+});
+
+changeBgOption.addEventListener('click', () => {
+  bgUpload.click(); // triggers the file upload
+});
+
+    let typingTimeout;
+   
+    const avatarSeed = avatarSelect.value;
+    const avatarUrl = `https://api.dicebear.com/7.x/personas/svg?seed=${avatarSeed}`;
+    localStorage.setItem('babaAvatar', avatarSeed);
+    if (mainAvatar) mainAvatar.src = avatarUrl;
+
+function handleLogin() {
+      const nick = loginInput.value.trim();
+      if (nick !== '') {
+	  console.log("✅ Logged in as:", nick);
+	  myNickname = nick;
+        localStorage.setItem('babaNickname', nick);
+        const selectedAvatar = avatarSelect.value;
+        localStorage.setItem('babaAvatar', selectedAvatar);
+        if (nicknameInput) nicknameInput.value = nick;
+        loginScreen.style.display = 'none';
+		
+		// ✅ Apply background saved during login options
+const savedBg = localStorage.getItem('babaChatBg');
+if (savedBg) {
+  const chatContainer = document.getElementById('chat-container');
+  chatContainer.style.backgroundImage = `url('${savedBg}')`;
+  chatContainer.style.backgroundSize = 'cover';
+  chatContainer.style.backgroundPosition = 'center';
+}
+
+		
+        if (mainAvatar) {
+          mainAvatar.src = `https://api.dicebear.com/7.x/personas/svg?seed=${selectedAvatar}`;
+        }
+        ws = new WebSocket('wss://babachat1-twtc.onrender.com');
+		myNickname = nick;
+		
+
+		
+		ws.onopen = () => {
+        const nick = localStorage.getItem('babaNickname');
+        ws.send(JSON.stringify({ type: 'init', nick }));
+};
+
+messageInput.addEventListener('input', () => {
+  clearTimeout(typingTimeout);
+
+  const nick = localStorage.getItem('babaNickname');
+  const to = selectedContact;
+  
+  console.log("🧠 Typing as:", nick, "→", to);
+
+
+  if (!nick || !to) {
+    console.warn("❌ Skipping typing send — nick or contact missing", { nick, to });
+    return;
+	}
+
+  const data = {
+    type: 'typing',
+    from: nick,
+    to: to
+  };
+
+  console.log("📤 Sending typing event:", data); // ✅ now it's defined
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+  console.log("🛰️ Actually sending over WebSocket:", JSON.stringify(data));
+    ws.send(JSON.stringify(data));
+  }
+
+  typingTimeout = setTimeout(() => {
+    typingIndicator.textContent = '';
+  }, 2000);
+});
+
+const messageReceivedAudio = document.getElementById('messageReceived');
+
+ws.onmessage = (event) => {
+
+let msg;
+  try {
+    msg = JSON.parse(event.data);
+  } catch (err) {
+    console.error('❌ Error parsing message:', err);
+    return;
+  }
+
+  const currentNick = localStorage.getItem('babaNickname');
+
+if (msg.type === 'status') {
+  const { nick, status, lastSeen } = msg;
+  userStatus[nick] = {
+    online: status === 'online',
+    lastSeen: lastSeen || null
+  };
+  updateContactStatus(nick); // 👈 you already have this function
+  if (selectedContact === nick) {
+    updateChatHeaderStatus(nick); // 👈 optional helper for chat header
+  }
+  return;
+}
+
+
+
+
+  try {
+    const msg = JSON.parse(event.data);
+    const currentNick = localStorage.getItem('babaNickname');
+
+    if (!msg.type || !msg.from) {
+      console.warn('⛔ Skipping invalid message:', msg);
+      return;
+    }
+
+    ensureContact(msg.from);
+
+    // ✏️ Typing
+    if (msg.type === 'typing') {
+      if (msg.to === currentNick && selectedContact === msg.from) {
+        const alias = getDisplayName(msg.from);
+        typingIndicator.textContent = `${alias} is typing...`;
+
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          typingIndicator.textContent = '';
+        }, 2000);
+      }
+      return;
+    }
+
+    // 💬 Message
+    if (msg.type === 'message') {
+      if (msg.to === currentNick) {
+	  
+	  if (typeof msg.text !== 'string') {
+    console.warn("❌ Invalid message.text — not a string:", msg.text);
+    return;
+  }
+	  
+        // Always update contact list
+        if (!contacts.includes(msg.from)) {
+          contacts.push(msg.from);
+          renderContacts();
+
+          // Auto-select first contact if none selected
+          if (!selectedContact && contacts.length > 0) {
+            const firstRoom = roomList.querySelector('.room');
+            if (firstRoom) switchContact(contacts[0], firstRoom);
+          }
+        }
+
+        // Show the message only if you're chatting with them
+        if (selectedContact === msg.from) {
+          appendMessage('received', msg.from, msg.text);
+        }
+
+        // ✅ Save chat history regardless
+        if (!chatHistory[msg.from]) chatHistory[msg.from] = [];
+        chatHistory[msg.from].push(
+          `<div class="message received"><strong>${getDisplayName(msg.from)}:</strong> ${msg.text}<span class="timestamp">${formatTime()}</span></div>`
+        );
+
+        try {
+          localStorage.setItem('babaChatHistory', JSON.stringify(chatHistory));
+        } catch (e) {
+          console.error('⚠️ Failed to save chat history:', e);
+        }
+
+        // 🔊 Play sound (optional)
+        const messageReceivedAudio = document.getElementById('messageReceived');
+        if (messageReceivedAudio) {
+          messageReceivedAudio.play().catch(err => {
+            console.warn("🔇 Could not play sound:", err);
+          });
+        }
+      }
+    }
+
+  } catch (err) {
+    console.error('❌ Error in ws.onmessage:', err);
+  }
+};
+
+
+
+      } else {
+        alert('Please enter a nickname.');
+      }
+    }
+	
+    loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+    loginButton.addEventListener('click', handleLogin);
+
+    optionsToggle.addEventListener('click', () => {
+      optionsMenu.style.display = optionsMenu.style.display === 'none' ? 'block' : 'none';
+    });
+
+    darkModeToggle.addEventListener('change', () => {
+      localStorage.setItem('babaDarkMode', darkModeToggle.checked);
+      document.body.classList.toggle('dark-mode', darkModeToggle.checked);
+    });
+
+    themeSelect.addEventListener('change', () => {
+      localStorage.setItem('babaTheme', themeSelect.value);
+      document.body.className = themeSelect.value + '-theme';
+    });
+
+    avatarSelect.addEventListener('change', () => {
+      const seed = avatarSelect.value;
+      avatarPreview.src = `https://api.dicebear.com/7.x/personas/svg?seed=${seed}`;
+      localStorage.setItem('babaAvatar', seed);
+    });
+	
+	if (chatBgUpload) {
+       chatBgUpload.addEventListener('change', function (event) {
+       const file = event.target.files[0];
+       if (file) {
+       const reader = new FileReader();
+       reader.onload = function (e) {
+        const imageUrl = e.target.result;
+        const chatContainer = document.getElementById('chat-container');
+        chatContainer.style.backgroundImage = `url('${imageUrl}')`;
+        chatContainer.style.backgroundSize = 'cover';
+        chatContainer.style.backgroundPosition = 'center';
+        localStorage.setItem('babaChatBg', imageUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Load saved background
+  const savedBg = localStorage.getItem('babaChatBg');
+  if (savedBg) {
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.style.backgroundImage = `url('${savedBg}')`;
+    chatContainer.style.backgroundSize = 'cover';
+    chatContainer.style.backgroundPosition = 'center';
+  }
+}
+
+    soundToggle.addEventListener('change', () => {
+      localStorage.setItem('babaSound', soundToggle.checked);
+    });
+
+    languageSelect.addEventListener('change', () => {
+      localStorage.setItem('babaLanguage', languageSelect.value);
+      applyLanguage(languageSelect.value);
+    });
+
+    function restorePreferences() {
+      if (localStorage.getItem('babaDarkMode') === 'true') {
+        darkModeToggle.checked = true;
+        document.body.classList.add('dark-mode');
+      }
+      const savedTheme = localStorage.getItem('babaTheme');
+      if (savedTheme) {
+        themeSelect.value = savedTheme;
+        document.body.className = savedTheme + '-theme';
+      }
+      const savedAvatar = localStorage.getItem('babaAvatar');
+      if (savedAvatar) {
+        avatarSelect.value = savedAvatar;
+        avatarPreview.src = `https://api.dicebear.com/7.x/personas/svg?seed=${savedAvatar}`;
+      }
+      if (localStorage.getItem('babaSound') === 'true') {
+        soundToggle.checked = true;
+      }
+      const savedLang = localStorage.getItem('babaLanguage');
+      if (savedLang) {
+        languageSelect.value = savedLang;
+        applyLanguage(savedLang);
+      }
+      const savedBg = localStorage.getItem('babaLoginBg');
+      if (savedBg) {
+        document.body.style.backgroundImage = `url('${savedBg}')`;
+        document.body.style.backgroundSize = 'cover';
+      }
+    }
+
+    function applyLanguage(lang) {
+      const translations = {
+        en: { login: 'Login', nickname: 'Your Nickname', options: 'Options' },
+        es: { login: 'Iniciar sesión', nickname: 'Tu apodo', options: 'Opciones' },
+        nl: { login: 'Inloggen', nickname: 'Jouw bijnaam', options: 'Opties' }
+      };
+      const t = translations[lang] || translations.en;
+      loginButton.textContent = t.login;
+      loginInput.placeholder = t.nickname;
+      optionsToggle.textContent = t.options;
+    }
+
+    const savedNick = localStorage.getItem('babaNickname');
+    if (savedNick) loginInput.value = savedNick;
+    loginScreen.style.display = 'flex';
+    restorePreferences();
+
+    const savedChatHistory = localStorage.getItem('babaChatHistory');
+    if (savedChatHistory) {
+      const parsed = JSON.parse(savedChatHistory);
+      for (const contact in parsed) {
+        chatHistory[contact] = parsed[contact].map(html => {
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = html;
+          return wrapper.firstChild;
+        });
+      }
+    }
+
+    function formatTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+	
+	function ensureContact(name) {
+      if (!contacts.includes(name)) {
+       contacts.push(name);
+       renderContacts();
+  }
+}
+
+
+function updateContactStatus(nick) {
+  const rooms = roomList.querySelectorAll('.room');
+  rooms.forEach(room => {
+    if (room.textContent.includes(getDisplayName(nick))) {
+      let dot = room.querySelector('.status-dot');
+      if (!dot) {
+        dot = document.createElement('span');
+        dot.classList.add('status-dot');
+        room.appendChild(dot);
+      }
+      dot.style.background = userStatus[nick]?.online ? 'limegreen' : 'gray';
+    }
+  });
+}
+
+function updateChatHeaderStatus(nick) {
+  const header = document.getElementById('contact-name');
+  const statusDiv = document.getElementById('contact-status');
+  if (!userStatus[nick]) return;
+
+  // Handle online status
+  if (userStatus[nick].online) {
+    header.textContent = `Chatting with ${getDisplayName(nick)} (🟢 online)`;
+    statusDiv.textContent = '🟢 Online'; // Show immediately in chat status
+  } else {
+    const lastSeen = userStatus[nick].lastSeen
+      ? new Date(userStatus[nick].lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : 'unknown';
+    header.textContent = `Chatting with ${getDisplayName(nick)} (Last seen: ${lastSeen})`;
+    statusDiv.textContent = `🔘 Last seen at ${lastSeen}`;
+  }
+}
+
+
+
+
+
+    function renderContacts() {
+      roomList.innerHTML = '';
+      contacts.forEach(name => {
+	  if (typeof name !== 'string') return;
+        const div = document.createElement('div');
+        div.className = 'room';
+       div.innerHTML = `<img src="https://api.dicebear.com/7.x/personas/svg?seed=${name}" alt="avatar"> <span>${getDisplayName(name)}</span>`;
+        div.onclick = () => switchContact(name, div);
+        roomList.appendChild(div);
+      });
+    }
+
+function switchContact(name, element) {
+  window.selectedContact = name;
+  document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+  element.classList.add('active');
+  contactName.textContent = `Chatting with ${getDisplayName(name)}`;
+
+  // ✅ Online/last seen status
+  const status = userStatus[name];
+  const statusDiv = document.getElementById('contact-status');
+  if (statusDiv) {
+    if (status?.online) {
+      statusDiv.textContent = '🟢 Online';
+    } else {
+      const lastSeen = status?.lastSeen
+        ? new Date(status.lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : 'unknown';
+      statusDiv.textContent = `🔘 Last seen at ${lastSeen}`;
+    }
+  
+
+  loadMessages(name);
+}
+
+	  
+	  const contactAvatar = document.getElementById('contact-avatar');
+  if (contactAvatar) {
+    contactAvatar.src = `https://api.dicebear.com/7.x/personas/svg?seed=${name}`;
+  }
+	  
+	  
+      loadMessages(name);
+    }
+	
+
+if (clearChatBtn) {
+  clearChatBtn.addEventListener('click', () => {
+    if (!selectedContact) return;
+
+    // Clear chat visually
+    messagesDiv.innerHTML = '';
+
+    // Clear chat history for selected contact
+    delete chatHistory[selectedContact];
+
+    // Save updated chat history to localStorage
+    try {
+      localStorage.setItem('babaChatHistory', JSON.stringify(
+        Object.fromEntries(
+          Object.entries(chatHistory).map(([k, v]) => [
+            k,
+            v.filter(m => m != null).map(m =>
+              typeof m === 'string' ? m : m.outerHTML
+            )
+          ])
+        )
+      ));
+    } catch (e) {
+      console.error('Failed to save chat history after clearing:', e);
+    }
+  });
+}
+
+
+function loadMessages(name) {
+  messagesDiv.innerHTML = '';
+  const msgs = chatHistory[name] || [];
+
+  msgs.forEach(msg => {
+    if (typeof msg === 'string') {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = msg.trim(); // trim in case whitespace causes an empty node
+      const node = wrapper.firstElementChild;
+      if (node instanceof Node) {
+        messagesDiv.appendChild(node);
+      }
+    } else if (msg instanceof Node) {
+      messagesDiv.appendChild(msg);
+    }
+  });
+}
+
+	renderContacts();
+
+    if (contacts.length > 0) {
+      const firstRoom = roomList.querySelector('.room');
+    if (firstRoom) {
+       switchContact(contacts[0], firstRoom);
+  }
+}
+
+
+function appendMessage(type, nick, text) {
+  const myNick = localStorage.getItem('babaNickname');
+  const displayNick = contactAliases[nick] || nick;
+  const messageReceived = document.getElementById('messageReceived');
+
+  // 🔐 Sanitize message text
+  const safeText = (typeof text === 'string') ? text : JSON.stringify(text);
+
+  const div = document.createElement('div');
+  div.classList.add('message', type);
+  div.innerHTML = `<strong>${displayNick}:</strong> ${safeText}<span class="timestamp" data-bg="${document.body.classList.contains('dark-mode') ? 'dark' : 'light'}">${formatTime()}</span>`;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+  const computedBg = getComputedStyle(document.getElementById('chat-container')).backgroundColor;
+  const timestamp = div.querySelector('.timestamp');
+  if (timestamp) {
+    const isDark = isDarkColor(computedBg);
+    timestamp.style.color = isDark ? '#fff' : '#000';
+  }
+}
+
+  
+
+  
+
+
+
+    sendButton.onclick = () => sendMessage();
+    messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault(); // prevent accidental new lines
+    sendMessage();
+  }
+});
+
+	
+	
+function sendMessage() {
+  
+  const text = messageInput.value.trim();
+if (typeof text !== 'string') {
+  console.warn("⛔ Invalid message text (not a string):", text);
+  return;
+}
+  const nick = localStorage.getItem('babaNickname') || 'Anonymous';
+  const to = selectedContact;
+  const messageSentAudio = document.getElementById('messageSent');
+ 
+
+  // Prevent sending without a selected contact
+  if (!to) {
+    alert("Please select a contact to send a message.");
+    return;
+  }
+
+  // Now ensure contact
+  ensureContact(to);
+
+  if (text) {
+    appendMessage('sent', nick, text);
+	messageSent.play();
+	messageInput.value = '';
+    messageSentAudio.volume = 0.6;
+	
+    if (!chatHistory[to]) chatHistory[to] = [];
+    const lastMsg = messagesDiv.lastElementChild;
+    if (lastMsg) {
+      chatHistory[to].push(lastMsg.outerHTML);
+    }
+
+    try {
+      localStorage.setItem('babaChatHistory', JSON.stringify(
+        Object.fromEntries(
+          Object.entries(chatHistory).map(([k, v]) => [
+            k,
+            v.filter(msg => msg !== null && msg !== undefined).map(msg =>
+              typeof msg === 'string' ? msg : msg.outerHTML
+            )
+          ])
+        )
+      ));
+    } catch (e) {
+      console.error('Failed to save chat history:', e);
+    }
+	
+	if (typeof text !== 'string') {
+  console.warn("❌ Tried to send non-string message text:", text);
+  return;
+}
+
+    ws.send(JSON.stringify({ 
+	type: 'message',
+	from: nick,
+	to: selectedContact,
+	text: text
+	
+	}));
+    messageInput.value = '';
+  }
+}
+
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file && selectedContact) {
+        const nick = nicknameInput.value.trim() || 'Anonymous';
+        const link = URL.createObjectURL(file);
+        appendMessage('sent', nick, `<a href="${link}" download="${file.name}">📎 ${file.name}</a>`);
+      }
+    });
+
+    if (emojiBtn && emojiContainer && picker && messageInput) {
+      emojiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emojiContainer.classList.toggle('active');
+        emojiContainer.style.display = emojiContainer.style.display === 'block' ? 'none' : 'block';
+      });
+
+      picker.addEventListener('emoji-click', (event) => {
+        messageInput.value += event.detail.unicode;
+        messageInput.focus();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!emojiContainer.contains(e.target) && e.target !== emojiBtn) {
+          emojiContainer.classList.remove('active');
+        }
+      });
+    }
+
+    addFriendBtn.addEventListener('click', () => {
+  const name = addFriendInput.value.trim();
+  if (name && !contacts.includes(name)) {
+    contacts.push(name);
+    localStorage.setItem('babaContacts', JSON.stringify(contacts));
+    renderContacts();
+    addFriendInput.value = '';
+  }
+});
+
+	
+	addFriendInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    addFriendBtn.click();
+  }
+});
+
+ 
+  });
+  
+  function startSidebarParticles() {
+  const canvas = document.getElementById('sidebar-particles');
+  const ctx = canvas.getContext('2d');
+
+  let particles = [];
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  function createParticles() {
+    particles = [];
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        radius: Math.random() * 1.8 + 1,
+        alpha: Math.random() * 0.6 + 0.3
+      });
+    }
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ff42e3';
+	ctx.shadowBlur = 8;
+    ctx.shadowColor = '#ff42e3';
+
+
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.globalAlpha = p.alpha;
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function updateParticles() {
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    }
+  }
+
+  function animate() {
+    updateParticles();
+    drawParticles();
+    requestAnimationFrame(animate);
+  }
+
+  createParticles();
+  animate();
+}
+
+document.addEventListener('DOMContentLoaded', startSidebarParticles);
+const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+gradient.addColorStop(0, '#ff79c6');
+gradient.addColorStop(1, '#ff42e3');
+ctx.fillStyle = gradient;
+
+let mouse = { x: null, y: null };
+
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - rect.left;
+  mouse.y = e.clientY - rect.top;
+});
+
+function updateParticles() {
+  for (const p of particles) {
+    const dx = p.x - mouse.x;
+    const dy = p.y - mouse.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 80 && dist > 0) {
+      p.vx += dx / dist * 0.05;
+      p.vy += dy / dist * 0.05;
+    }
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+  }
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (const p of particles) {
+    ctx.beginPath();
+    ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = '#ff42e3';
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Draw lines
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const a = particles[i];
+      const b = particles[j];
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.globalAlpha = 0.1;
+        ctx.strokeStyle = '#ff42e3';
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  ctx.globalAlpha = 1;
+}
+
+
+  
+
+
+
+  
+  
+</script>
+
+
+</body>
+</html>
